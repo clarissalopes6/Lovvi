@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lovvi App - Aplicação Spring Boot moderna">
+    <title th:text="${title}">Lovvi App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">💜</span>
+                <span>Lovvi</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link active">Home</a></li>
+                <li><a href="/sobre" class="nav-link">Sobre</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="badge">
+                <span class="badge-dot"></span>
+                Spring Boot 3.4 · Java 21
+            </div>
+            <h1 class="hero-title" th:text="${message}">Bem-vindo ao Lovvi! 🚀</h1>
+            <p class="hero-subtitle" th:text="${status}">Aplicação rodando com sucesso!</p>
+            <div class="hero-actions">
+                <a href="/sobre" class="btn btn-primary">Saiba mais</a>
+                <a href="http://localhost:8080" class="btn btn-outline">Ver API</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cards Section -->
+    <section class="cards-section">
+        <div class="container">
+            <h2 class="section-title">Tecnologias utilizadas</h2>
+            <p class="section-subtitle">Stack moderna e robusta para o seu projeto</p>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">🍃</div>
+                    <h3 class="card-title">Spring Boot 3.4</h3>
+                    <p class="card-text">Framework Java de alto desempenho com auto-configuração e servidor embutido.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">☕</div>
+                    <h3 class="card-title">Java 21 LTS</h3>
+                    <p class="card-text">Versão LTS mais recente do Java com virtual threads e features modernas.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🌿</div>
+                    <h3 class="card-title">Thymeleaf</h3>
+                    <p class="card-text">Template engine server-side, natural e integrado ao Spring MVC.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3 class="card-title">DevTools</h3>
+                    <p class="card-text">Hot reload automático para agilizar o desenvolvimento local.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎯</div>
+                    <h3 class="card-title">Maven</h3>
+                    <p class="card-text">Gerenciamento de dependências e build automatizado e confiável.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧪</div>
+                    <h3 class="card-title">Spring Test</h3>
+                    <p class="card-text">Suite de testes integrada com JUnit 5 para testes unitários e de integração.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Feito com 💜 · Lovvi App · <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2026</span></p>
+        </div>
+    </footer>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
