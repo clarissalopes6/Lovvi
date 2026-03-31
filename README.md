@@ -20,7 +20,7 @@ O projeto foca na relação entre três pilares principais:
 
 * **`usuario`**: Armazena o núcleo do perfil (nome, email, gênero, data de nascimento).
 * **`perfil`**: Detalhes específicos como descrição, preferências gerais e altura.
-* **`pergunta` e `opcao_resposta`**: Sistema dinâmico de questionários divididos por categorias.
+* **`pergunta`**: Sistema dinâmico de questionários divididos por categorias.
 * **`resposta`**: O vínculo crucial que liga o usuário às escolhas feitas no teste.
 * **`interesse`**: Tabela de tags (hobbies/atividades) que o usuário possui.
 * **`usuario_relacionamento_serio` / `usuario_amizade`**: Especializações que definem o objetivo do usuário e filtros como distância máxima.
