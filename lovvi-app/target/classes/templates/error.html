@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Erro - Lovvi App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="container" style="padding-top: 10rem;">
+        <section class="result-section">
+            <h1>Erro</h1>
+            <p th:text="${message}">Algo deu errado.</p>
+            <p><a href="/" class="btn btn-primary">Voltar para home</a></p>
+        </section>
+    </main>
+
+</body>
+</html>
