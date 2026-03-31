@@ -38,4 +38,10 @@ public class HomeController {
         model.addAttribute("title", "Sobre - Lovvi App");
         return "sobre";
     }
+
+    @GetMapping("/interface")
+    public String interfaceBanco(Model model) {
+        model.addAttribute("title", "Interface do Banco - Lovvi");
+        return "interface";
+    }
 }

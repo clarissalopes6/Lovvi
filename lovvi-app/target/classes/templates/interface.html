@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explorador de banco de dados Lovvi">
+    <title>Interface do Banco - Lovvi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="db-page">
+    <header class="db-header">
+        <div>
+            <h1 class="db-title">Interface do Banco</h1>
+            <p class="db-subtitle">Visualize tabelas, colunas e registros em tempo real.</p>
+        </div>
+        <div class="db-header-actions">
+            <button id="btnRefresh" class="btn btn-outline" type="button">Atualizar</button>
+            <a href="/" class="btn btn-back">Voltar para Home</a>
+        </div>
+    </header>
+
+    <main class="db-layout">
+        <aside class="db-sidebar">
+            <div class="db-sidebar-top">
+                <p class="db-muted">Banco</p>
+                <strong id="dbName">-</strong>
+            </div>
+            <label class="db-search-label" for="tableSearch">Buscar tabela</label>
+            <input id="tableSearch" class="db-search" type="text" placeholder="Ex.: usuario, interesse">
+            <div id="tablesCount" class="db-count">0 tabelas</div>
+            <ul id="tableList" class="db-table-list"></ul>
+        </aside>
+
+        <section class="db-content">
+            <div class="db-stats">
+                <article class="db-stat-card">
+                    <span>Tabela selecionada</span>
+                    <strong id="selectedTable">-</strong>
+                </article>
+                <article class="db-stat-card">
+                    <span>Colunas</span>
+                    <strong id="selectedColumns">0</strong>
+                </article>
+                <article class="db-stat-card">
+                    <span>Total de registros</span>
+                    <strong id="selectedRows">0</strong>
+                </article>
+            </div>
+
+            <div class="db-panels">
+                <article class="db-panel">
+                    <div class="db-panel-header">
+                        <h2>Estrutura da Tabela</h2>
+                    </div>
+                    <div class="db-table-wrap">
+                        <table class="db-grid" id="columnsGrid">
+                            <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Tamanho</th>
+                                <th>Nulo</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td colspan="4">Selecione uma tabela para visualizar as colunas.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="db-panel">
+                    <div class="db-panel-header">
+                        <h2>Dados</h2>
+                        <label class="db-limit">
+                            Limite
+                            <select id="rowLimit">
+                                <option value="25">25</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div id="rowsGridWrap" class="db-table-wrap">
+                        <p class="db-empty">Selecione uma tabela para visualizar os registros.</p>
+                    </div>
+                </article>
+            </div>
+
+            <section class="crud-section">
+                <p id="crudHint" class="crud-hint">Selecione a tabela usuario ou teste para abrir o CRUD correspondente.</p>
+
+                <article id="crudUsuarioCard" class="crud-card">
+                    <div class="crud-card-header">
+                        <h2>CRUD de Usuario</h2>
+                        <p>Inserir, alterar e deletar registros da tabela usuario.</p>
+                    </div>
+
+                    <form id="formUsuario" class="crud-form">
+                        <input type="hidden" id="usuarioId">
+                        <div class="crud-fields two-col">
+                            <div class="field">
+                                <label for="usuarioNome">Nome</label>
+                                <input id="usuarioNome" type="text" required>
+                            </div>
+                            <div class="field">
+                                <label for="usuarioSobrenome">Sobrenome</label>
+                                <input id="usuarioSobrenome" type="text" required>
+                            </div>
+                            <div class="field">
+                                <label for="usuarioEmail">Email</label>
+                                <input id="usuarioEmail" type="email" required>
+                            </div>
+                            <div class="field">
+                                <label for="usuarioSenha">Senha</label>
+                                <input id="usuarioSenha" type="text" required>
+                            </div>
+                            <div class="field">
+                                <label for="usuarioCidade">Cidade</label>
+                                <input id="usuarioCidade" type="text" required>
+                            </div>
+                            <div class="field">
+                                <label for="usuarioGenero">Genero</label>
+                                <select id="usuarioGenero" required>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Feminino">Feminino</option>
+                                    <option value="Nao-binario">Nao-binario</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="usuarioNascimento">Data de nascimento</label>
+                                <input id="usuarioNascimento" type="date" required>
+                            </div>
+                        </div>
+
+                        <div class="crud-actions">
+                            <button type="submit" class="btn btn-primary">Salvar usuario</button>
+                            <button type="button" id="btnUsuarioClear" class="btn btn-outline">Limpar formulario</button>
+                        </div>
+                    </form>
+
+                    <div id="usuariosCrudMsg" class="crud-msg"></div>
+
+                    <div class="db-table-wrap">
+                        <table class="db-grid crud-grid" id="usuariosCrudGrid">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Cidade</th>
+                                <th>Genero</th>
+                                <th>Acoes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td colspan="6">Carregando usuarios...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article id="crudTesteCard" class="crud-card">
+                    <div class="crud-card-header">
+                        <h2>CRUD de Teste</h2>
+                        <p>Inserir, alterar e deletar registros da tabela teste.</p>
+                    </div>
+
+                    <form id="formTeste" class="crud-form">
+                        <input type="hidden" id="testeId">
+                        <div class="crud-fields">
+                            <div class="field">
+                                <label for="testeNome">Nome do teste</label>
+                                <input id="testeNome" type="text" required>
+                            </div>
+                            <div class="field">
+                                <label for="testeDescricao">Descricao</label>
+                                <textarea id="testeDescricao" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="crud-actions">
+                            <button type="submit" class="btn btn-primary">Salvar teste</button>
+                            <button type="button" id="btnTesteClear" class="btn btn-outline">Limpar formulario</button>
+                        </div>
+                    </form>
+
+                    <div id="testesCrudMsg" class="crud-msg"></div>
+
+                    <div class="db-table-wrap">
+                        <table class="db-grid crud-grid" id="testesCrudGrid">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Descricao</th>
+                                <th>Acoes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td colspan="4">Carregando testes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </section>
+    </main>
+</div>
+
+<script th:src="@{/js/interface.js}"></script>
+</body>
+</html>

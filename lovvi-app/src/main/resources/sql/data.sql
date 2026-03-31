@@ -256,7 +256,27 @@ INSERT INTO teste (nome_teste, descricao) VALUES
 ('Ambicoes e Metas',         'Verifica objetivos de vida e ambicoes profissionais'),
 ('Familia e Filhos',         'Avalia planos familiares e desejo de ter filhos'),
 ('Interesses Culturais',     'Mede afinidade com cultura, arte e entretenimento'),
-('Saude e Bem-estar',        'Avalia habitos de saude, exercicio e alimentacao');
+('Saude e Bem-estar',        'Avalia habitos de saude, exercicio e alimentacao'),
+('Comunidade e Causas',      'Mede engajamento social, voluntariado e causas humanas'),
+('Planejamento Financeiro',  'Avalia organizacao financeira e visao de futuro'),
+('Rotina de Trabalho',       'Avalia equilibrio entre carreira e vida pessoal'),
+('Preferencias de Viagem',   'Compara estilos e destinos de viagem preferidos'),
+('Tecnologia e Inovacao',    'Mede afinidade com tecnologia e novas tendencias'),
+('Convivio Familiar',        'Avalia relacao com familia e convivencia diaria'),
+('Saude Emocional',          'Mede capacidade de autocuidado e maturidade emocional'),
+('Objetivos Academicos',     'Compara objetivos de estudo e desenvolvimento'),
+('Consumo Cultural',         'Avalia habitos de leitura, cinema, teatro e musica'),
+('Espiritualidade',          'Mede visao espiritual e valores transcendentais'),
+('Lideranca e Colaboracao',  'Avalia postura em grupo, lideranca e trabalho colaborativo'),
+('Estilo de Comunicacao',    'Mapeia clareza, escuta e assertividade na comunicacao'),
+('Gestao de Conflitos',      'Avalia como a pessoa reage e resolve divergencias'),
+('Adaptabilidade',           'Mede flexibilidade diante de mudancas e imprevistos'),
+('Hobbies Criativos',        'Compara interesse por artes, escrita e criacao'),
+('Rotina Esportiva',         'Avalia frequencia e motivacao para atividade fisica'),
+('Proposito de Vida',        'Mede alinhamento entre valores, metas e significado pessoal'),
+('Empatia e Escuta',         'Avalia abertura para compreender o outro no dia a dia'),
+('Vinculos e Convivencia',   'Mede consistencia de convivio e qualidade dos vinculos sociais'),
+('Confianca e Transparencia','Mede nivel de honestidade e construcao de confianca');
 
 INSERT INTO pergunta (texto_pergunta, categoria, id_teste) VALUES
 ('Qual e sua atividade favorita no fim de semana?', 'Lazer', 1),
