@@ -1,5 +1,3 @@
-USE lovvi_db;
-
 INSERT INTO usuario (nome, sobrenome, email, senha, cidade, genero, dt_nascimento) VALUES
 ('Joao',      'Silva',      'joao.silva@email.com',      'senha123', 'Sao Paulo',      'Masculino', '1995-03-15'),
 ('Beatriz',   'Santos',     'beatriz.santos@email.com',  'senha123', 'Rio de Janeiro',  'Feminino',  '1998-07-22'),
