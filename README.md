@@ -1,4 +1,4 @@
-#Lovvi: Plataforma de relacionamento
+# Lovvi: Plataforma de relacionamento
 
 O **Lovvi** é um projeto de plataforma de relacionamentos focado na precisão do cruzamento de dados. Diferente de apps baseados apenas em fotos, o Lovvi utiliza o perfil comportamental e as preferências declaradas para gerar conexões reais através de consultas diretas no banco de dados!
 
