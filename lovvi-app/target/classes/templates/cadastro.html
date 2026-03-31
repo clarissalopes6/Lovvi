@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lovvi - Cadastro">
+    <title>Cadastro - Lovvi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="page-container">
+        <header class="page-header">
+            <h1 class="page-title">Criar sua conta</h1>
+            <p class="page-subtitle">Preencha seus dados para encontrar seu match</p>
+        </header>
+
+        <div class="form-card">
+            <div id="formMsg"></div>
+
+            <form id="formCadastro">
+                <div class="form-row">
+                    <div class="field">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+                    </div>
+                    <div class="field">
+                        <label for="sobrenome">Sobrenome</label>
+                        <input type="text" id="sobrenome" name="sobrenome" placeholder="Seu sobrenome" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" name="senha" placeholder="Sua senha" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" id="cidade" name="cidade" placeholder="Sua cidade" required>
+                    </div>
+                    <div class="field">
+                        <label for="dt_nascimento">Data de Nascimento</label>
+                        <input type="date" id="dt_nascimento" name="dt_nascimento" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="genero">Genero</label>
+                        <select id="genero" name="genero" required>
+                            <option value="">Selecione</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Nao-binario">Nao-binario</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="altura">Altura (m)</label>
+                        <input type="number" id="altura" name="altura" step="0.01" placeholder="1.70">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="tipo_perfil">Tipo de Perfil</label>
+                        <select id="tipo_perfil" name="tipo_perfil" required>
+                            <option value="">Selecione</option>
+                            <option value="casual">Casual</option>
+                            <option value="relacionamento">Relacionamento</option>
+                            <option value="amizade">Amizade</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="objetivos">Objetivos</label>
+                        <input type="text" id="objetivos" name="objetivos" placeholder="O que voce busca?">
+                    </div>
+                </div>
+
+                <div class="form-row single">
+                    <div class="field">
+                        <label for="descricao">Sobre voce</label>
+                        <textarea id="descricao" name="descricao" placeholder="Conte um pouco sobre voce..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row single">
+                    <div class="field">
+                        <label for="preferencias">Preferencias</label>
+                        <textarea id="preferencias" name="preferencias" placeholder="O que voce procura em alguem?"></textarea>
+                    </div>
+                </div>
+
+                <div class="interests-section">
+                    <span class="interests-label">Interesses</span>
+                    <div class="interests-box">
+                        <div class="interests-grid" id="interessesGrid">
+                            <p>Carregando interesses...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/" class="btn btn-back">Voltar para Home</a>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+            </form>
+
+            <div class="results" id="resultsSection">
+                <h3>Seus Matches</h3>
+                <div class="match-list" id="matchList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
