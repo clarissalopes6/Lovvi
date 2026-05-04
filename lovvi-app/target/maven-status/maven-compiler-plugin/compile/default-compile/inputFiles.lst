@@ -1,5 +1,34 @@
-C:\Users\rafa\Desktop\Nova pasta (2)\Lovvi\lovvi-app\src\main\java\com\lovvi\controller\DatabaseViewerApiController.java
-C:\Users\rafa\Desktop\Nova pasta (2)\Lovvi\lovvi-app\src\main\java\com\lovvi\controller\HomeController.java
-C:\Users\rafa\Desktop\Nova pasta (2)\Lovvi\lovvi-app\src\main\java\com\lovvi\controller\LovviApiController.java
-C:\Users\rafa\Desktop\Nova pasta (2)\Lovvi\lovvi-app\src\main\java\com\lovvi\infra\DatabaseConnection.java
-C:\Users\rafa\Desktop\Nova pasta (2)\Lovvi\lovvi-app\src\main\java\com\lovvi\LovviApplication.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\controller\DatabaseViewerApiController.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\controller\HomeController.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\controller\LovviApiController.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dao\DatabaseViewerDAO.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dao\InteresseDAO.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dao\TesteDAO.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dao\UsuarioDAO.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\CadastroUsuarioRequest.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\CadastroUsuarioResult.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\ColumnInfo.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\CrudResult.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\DatabaseOverview.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\MatchResultado.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\TableDetails.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\TableSummary.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\TesteCrudRequest.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\TesteCrudRow.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\UsuarioCrudRequest.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\dto\UsuarioCrudRow.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\infra\DatabaseConnection.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\LovviApplication.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\Foto.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\Interesse.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\LovviMatch.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\OpcaoResposta.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\Perfil.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\Pergunta.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\Resposta.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\Teste.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\Usuario.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\UsuarioAmizade.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\UsuarioInteresse.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\UsuarioPerfil.java
+C:\Users\rafa\Desktop\lovvi\Lovvi\lovvi-app\src\main\java\com\lovvi\model\UsuarioRelacionamentoSerio.java

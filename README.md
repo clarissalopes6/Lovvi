@@ -33,3 +33,35 @@ O projeto foca na relação entre três pilares principais:
 * **Interface:** HTML/CSS/JS
 
 ---
+
+## Integração com o Banco
+
+O projeto usa JDBC puro, sem ORM. Os comandos SQL ficam nos DAOs em `lovvi-app/src/main/java/com/lovvi/dao`, usando `Connection`, `PreparedStatement`, `ResultSet`, `INSERT`, `UPDATE`, `DELETE` e `SELECT` escritos manualmente.
+
+### Preparar o MySQL
+
+1. Crie o banco:
+
+```sql
+CREATE DATABASE IF NOT EXISTS lovvi_db
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+USE lovvi_db;
+```
+
+2. Execute os scripts nesta ordem:
+
+```text
+lovvi-app/src/main/resources/sql/schema.sql
+lovvi-app/src/main/resources/sql/data.sql
+```
+
+3. Ajuste usuario e senha em `lovvi-app/src/main/resources/application.properties`, ou use variaveis de ambiente:
+
+```powershell
+$env:DB_USER="root"
+$env:DB_PASSWORD="root"
+mvn spring-boot:run
+```
+
+Depois inicie a aplicacao e abra `http://localhost:8080/interface`.

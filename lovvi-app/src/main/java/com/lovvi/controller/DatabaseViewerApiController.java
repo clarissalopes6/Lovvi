@@ -1,6 +1,15 @@
 package com.lovvi.controller;
 
-import com.lovvi.infra.DatabaseConnection;
+import com.lovvi.dao.DatabaseViewerDAO;
+import com.lovvi.dao.TesteDAO;
+import com.lovvi.dao.UsuarioDAO;
+import com.lovvi.dto.CrudResult;
+import com.lovvi.dto.DatabaseOverview;
+import com.lovvi.dto.TableDetails;
+import com.lovvi.dto.TesteCrudRequest;
+import com.lovvi.dto.TesteCrudRow;
+import com.lovvi.dto.UsuarioCrudRequest;
+import com.lovvi.dto.UsuarioCrudRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -14,175 +23,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/interface")
 public class DatabaseViewerApiController {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseViewerApiController.class);
-    private final DatabaseConnection db;
 
-    public DatabaseViewerApiController(DatabaseConnection db) {
-        this.db = db;
+    private final DatabaseViewerDAO databaseViewerDAO;
+    private final UsuarioDAO usuarioDAO;
+    private final TesteDAO testeDAO;
+
+    public DatabaseViewerApiController(DatabaseViewerDAO databaseViewerDAO, UsuarioDAO usuarioDAO, TesteDAO testeDAO) {
+        this.databaseViewerDAO = databaseViewerDAO;
+        this.usuarioDAO = usuarioDAO;
+        this.testeDAO = testeDAO;
     }
 
-    record TableSummary(String tableName, int totalColumns, long totalRows) {
-    }
-
-    record ColumnInfo(String name, String type, int size, boolean nullable) {
-    }
-
-    record TableDetails(String tableName, List<ColumnInfo> columns, List<Map<String, Object>> rows) {
-    }
-
-    record DatabaseOverview(String databaseName, List<TableSummary> tables) {
-    }
-
-        record CrudResult(boolean success, String message, Integer id) {
-        }
-
-        record UsuarioCrudRequest(
-            String nome,
-            String sobrenome,
-            String email,
-            String senha,
-            String cidade,
-            String genero,
-            LocalDate dtNascimento
-        ) {
-        }
-
-        record UsuarioCrudRow(
-            int idUsuario,
-            String nome,
-            String sobrenome,
-            String email,
-            String cidade,
-            String genero,
-            LocalDate dtNascimento
-        ) {
-        }
-
-        record TesteCrudRequest(String nomeTeste, String descricao) {
-        }
-
-        record TesteCrudRow(int idTeste, String nomeTeste, String descricao) {
-        }
-
-        private boolean isBlank(String value) {
+    private boolean isBlank(String value) {
         return value == null || value.isBlank();
-        }
-
-    private String quoteIdentifier(Connection conn, String identifier) throws SQLException {
-        String quote = conn.getMetaData().getIdentifierQuoteString();
-        if (quote == null || quote.isBlank()) {
-            return identifier;
-        }
-        return quote + identifier + quote;
     }
 
-    private boolean isUserTable(String schema, String table) {
-        if (table == null || table.isBlank()) {
-            return false;
-        }
-        if (schema == null) {
-            return true;
-        }
-        String normalized = schema.toUpperCase();
-        return !normalized.equals("INFORMATION_SCHEMA")
-                && !normalized.equals("PG_CATALOG")
-                && !normalized.equals("SYS")
-                && !normalized.equals("MYSQL")
-                && !normalized.equals("PERFORMANCE_SCHEMA");
-    }
-
-    private List<String> getUserTableNames(Connection conn) throws SQLException {
-        List<String> tableNames = new ArrayList<>();
-        DatabaseMetaData meta = conn.getMetaData();
-
-        try (ResultSet rs = meta.getTables(conn.getCatalog(), null, "%", new String[]{"TABLE"})) {
-            while (rs.next()) {
-                String table = rs.getString("TABLE_NAME");
-                String schema = rs.getString("TABLE_SCHEM");
-                if (isUserTable(schema, table)) {
-                    tableNames.add(table);
-                }
-            }
-        }
-
-        tableNames.sort(String.CASE_INSENSITIVE_ORDER);
-        return tableNames;
-    }
-
-    private int countColumns(Connection conn, String tableName) throws SQLException {
-        int count = 0;
-        DatabaseMetaData meta = conn.getMetaData();
-
-        try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, tableName, "%")) {
-            while (rs.next()) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    private long countRows(Connection conn, String tableName) {
-        String sql;
-        try {
-            sql = "SELECT COUNT(1) FROM " + quoteIdentifier(conn, tableName);
-        } catch (SQLException e) {
-            return -1;
-        }
-
-        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getLong(1);
-            }
-        } catch (SQLException ignored) {
-        }
-
-        return -1;
-    }
-
-    private String resolveTableName(Connection conn, String requestedName) throws SQLException {
-        for (String table : getUserTableNames(conn)) {
-            if (table.equalsIgnoreCase(requestedName)) {
-                return table;
-            }
-        }
-        return null;
+    private int safeLimit(int limit, int max) {
+        return Math.max(1, Math.min(limit, max));
     }
 
     @GetMapping("/overview")
     public ResponseEntity<DatabaseOverview> getOverview() {
-        List<TableSummary> tables = new ArrayList<>();
-
-        try (Connection conn = db.getConnection()) {
-            String databaseName = conn.getCatalog();
-            for (String tableName : getUserTableNames(conn)) {
-                int totalColumns = countColumns(conn, tableName);
-                long totalRows = countRows(conn, tableName);
-                tables.add(new TableSummary(tableName, totalColumns, totalRows));
-            }
-
-            tables.sort(Comparator.comparing(TableSummary::tableName, String.CASE_INSENSITIVE_ORDER));
-            return ResponseEntity.ok(new DatabaseOverview(databaseName, tables));
+        try {
+            return ResponseEntity.ok(databaseViewerDAO.obterVisaoGeral());
         } catch (SQLException e) {
-            logger.error("Erro ao montar visão geral do banco", e);
+            logger.error("Erro ao montar visao geral do banco", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -192,47 +65,12 @@ public class DatabaseViewerApiController {
             @PathVariable("tableName") String tableName,
             @RequestParam(name = "limit", defaultValue = "50") int limit
     ) {
-        int safeLimit = Math.max(1, Math.min(limit, 200));
-
-        try (Connection conn = db.getConnection()) {
-            String resolvedTableName = resolveTableName(conn, tableName);
-            if (resolvedTableName == null) {
+        try {
+            TableDetails details = databaseViewerDAO.obterDetalhesTabela(tableName, safeLimit(limit, 200));
+            if (details == null) {
                 return ResponseEntity.notFound().build();
             }
-
-            List<ColumnInfo> columns = new ArrayList<>();
-            DatabaseMetaData meta = conn.getMetaData();
-            try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, resolvedTableName, "%")) {
-                while (rs.next()) {
-                    columns.add(new ColumnInfo(
-                            rs.getString("COLUMN_NAME"),
-                            rs.getString("TYPE_NAME"),
-                            rs.getInt("COLUMN_SIZE"),
-                            rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable
-                    ));
-                }
-            }
-
-            List<Map<String, Object>> rows = new ArrayList<>();
-            String sql = "SELECT * FROM " + quoteIdentifier(conn, resolvedTableName) + " LIMIT ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, safeLimit);
-                try (ResultSet rs = ps.executeQuery()) {
-                    ResultSetMetaData rsMeta = rs.getMetaData();
-                    int columnCount = rsMeta.getColumnCount();
-
-                    while (rs.next()) {
-                        Map<String, Object> row = new LinkedHashMap<>();
-                        for (int i = 1; i <= columnCount; i++) {
-                            String column = rsMeta.getColumnLabel(i);
-                            row.put(column, rs.getObject(i));
-                        }
-                        rows.add(row);
-                    }
-                }
-            }
-
-            return ResponseEntity.ok(new TableDetails(resolvedTableName, columns, rows));
+            return ResponseEntity.ok(details);
         } catch (SQLException e) {
             logger.error("Erro ao montar detalhes da tabela {}", tableName, e);
             return ResponseEntity.internalServerError().build();
@@ -243,28 +81,8 @@ public class DatabaseViewerApiController {
     public ResponseEntity<List<UsuarioCrudRow>> listUsuarios(
             @RequestParam(name = "limit", defaultValue = "100") int limit
     ) {
-        int safeLimit = Math.max(1, Math.min(limit, 300));
-        List<UsuarioCrudRow> usuarios = new ArrayList<>();
-        String sql = "SELECT id_usuario, nome, sobrenome, email, cidade, genero, dt_nascimento " +
-                "FROM usuario ORDER BY id_usuario DESC LIMIT ?";
-
-        try (Connection conn = db.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, safeLimit);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    usuarios.add(new UsuarioCrudRow(
-                            rs.getInt("id_usuario"),
-                            rs.getString("nome"),
-                            rs.getString("sobrenome"),
-                            rs.getString("email"),
-                            rs.getString("cidade"),
-                            rs.getString("genero"),
-                            rs.getDate("dt_nascimento") != null ? rs.getDate("dt_nascimento").toLocalDate() : null
-                    ));
-                }
-            }
-
-            return ResponseEntity.ok(usuarios);
+        try {
+            return ResponseEntity.ok(usuarioDAO.listarCrud(safeLimit(limit, 300)));
         } catch (SQLException e) {
             logger.error("Erro ao listar usuarios", e);
             return ResponseEntity.internalServerError().build();
@@ -273,33 +91,12 @@ public class DatabaseViewerApiController {
 
     @PostMapping("/usuarios")
     public ResponseEntity<CrudResult> createUsuario(@RequestBody UsuarioCrudRequest request) {
-        if (request == null || isBlank(request.nome()) || isBlank(request.sobrenome()) ||
-                isBlank(request.email()) || isBlank(request.senha()) || isBlank(request.cidade()) ||
-                isBlank(request.genero()) || request.dtNascimento() == null) {
+        if (usuarioInvalido(request)) {
             return ResponseEntity.badRequest().body(new CrudResult(false, "Dados obrigatorios do usuario ausentes.", null));
         }
 
-        String sql = "INSERT INTO usuario (nome, sobrenome, email, senha, cidade, genero, dt_nascimento) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, request.nome().trim());
-            ps.setString(2, request.sobrenome().trim());
-            ps.setString(3, request.email().trim());
-            ps.setString(4, request.senha());
-            ps.setString(5, request.cidade().trim());
-            ps.setString(6, request.genero().trim());
-            ps.setDate(7, java.sql.Date.valueOf(request.dtNascimento()));
-            ps.executeUpdate();
-
-            Integer createdId = null;
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    createdId = rs.getInt(1);
-                }
-            }
-
+        try {
+            int createdId = usuarioDAO.inserirCrud(request);
             return ResponseEntity.ok(new CrudResult(true, "Usuario inserido com sucesso.", createdId));
         } catch (SQLException e) {
             logger.error("Erro ao inserir usuario", e);
@@ -312,27 +109,13 @@ public class DatabaseViewerApiController {
             @PathVariable("idUsuario") int idUsuario,
             @RequestBody UsuarioCrudRequest request
     ) {
-        if (request == null || isBlank(request.nome()) || isBlank(request.sobrenome()) ||
-                isBlank(request.email()) || isBlank(request.senha()) || isBlank(request.cidade()) ||
-                isBlank(request.genero()) || request.dtNascimento() == null) {
+        if (usuarioInvalido(request)) {
             return ResponseEntity.badRequest().body(new CrudResult(false, "Dados obrigatorios do usuario ausentes.", null));
         }
 
-        String sql = "UPDATE usuario SET nome = ?, sobrenome = ?, email = ?, senha = ?, cidade = ?, genero = ?, " +
-                "dt_nascimento = ? WHERE id_usuario = ?";
-
-        try (Connection conn = db.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, request.nome().trim());
-            ps.setString(2, request.sobrenome().trim());
-            ps.setString(3, request.email().trim());
-            ps.setString(4, request.senha());
-            ps.setString(5, request.cidade().trim());
-            ps.setString(6, request.genero().trim());
-            ps.setDate(7, java.sql.Date.valueOf(request.dtNascimento()));
-            ps.setInt(8, idUsuario);
-
-            int updated = ps.executeUpdate();
-            if (updated == 0) {
+        try {
+            boolean updated = usuarioDAO.atualizarCrud(idUsuario, request);
+            if (!updated) {
                 return ResponseEntity.status(404).body(new CrudResult(false, "Usuario nao encontrado.", null));
             }
 
@@ -345,12 +128,9 @@ public class DatabaseViewerApiController {
 
     @DeleteMapping("/usuarios/{idUsuario}")
     public ResponseEntity<CrudResult> deleteUsuario(@PathVariable("idUsuario") int idUsuario) {
-        String sql = "DELETE FROM usuario WHERE id_usuario = ?";
-
-        try (Connection conn = db.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idUsuario);
-            int deleted = ps.executeUpdate();
-            if (deleted == 0) {
+        try {
+            boolean deleted = usuarioDAO.excluirCrud(idUsuario);
+            if (!deleted) {
                 return ResponseEntity.status(404).body(new CrudResult(false, "Usuario nao encontrado.", null));
             }
 
@@ -361,27 +141,23 @@ public class DatabaseViewerApiController {
         }
     }
 
+    private boolean usuarioInvalido(UsuarioCrudRequest request) {
+        return request == null
+                || isBlank(request.nome())
+                || isBlank(request.sobrenome())
+                || isBlank(request.email())
+                || isBlank(request.senha())
+                || isBlank(request.cidade())
+                || isBlank(request.genero())
+                || request.dtNascimento() == null;
+    }
+
     @GetMapping("/testes")
     public ResponseEntity<List<TesteCrudRow>> listTestes(
             @RequestParam(name = "limit", defaultValue = "100") int limit
     ) {
-        int safeLimit = Math.max(1, Math.min(limit, 300));
-        List<TesteCrudRow> testes = new ArrayList<>();
-        String sql = "SELECT id_teste, nome_teste, descricao FROM teste ORDER BY id_teste DESC LIMIT ?";
-
-        try (Connection conn = db.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, safeLimit);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    testes.add(new TesteCrudRow(
-                            rs.getInt("id_teste"),
-                            rs.getString("nome_teste"),
-                            rs.getString("descricao")
-                    ));
-                }
-            }
-
-            return ResponseEntity.ok(testes);
+        try {
+            return ResponseEntity.ok(testeDAO.listar(safeLimit(limit, 300)));
         } catch (SQLException e) {
             logger.error("Erro ao listar testes", e);
             return ResponseEntity.internalServerError().build();
@@ -394,21 +170,8 @@ public class DatabaseViewerApiController {
             return ResponseEntity.badRequest().body(new CrudResult(false, "Nome do teste e obrigatorio.", null));
         }
 
-        String sql = "INSERT INTO teste (nome_teste, descricao) VALUES (?, ?)";
-
-        try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, request.nomeTeste().trim());
-            ps.setString(2, request.descricao());
-            ps.executeUpdate();
-
-            Integer createdId = null;
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    createdId = rs.getInt(1);
-                }
-            }
-
+        try {
+            int createdId = testeDAO.inserir(request);
             return ResponseEntity.ok(new CrudResult(true, "Teste inserido com sucesso.", createdId));
         } catch (SQLException e) {
             logger.error("Erro ao inserir teste", e);
@@ -425,15 +188,9 @@ public class DatabaseViewerApiController {
             return ResponseEntity.badRequest().body(new CrudResult(false, "Nome do teste e obrigatorio.", null));
         }
 
-        String sql = "UPDATE teste SET nome_teste = ?, descricao = ? WHERE id_teste = ?";
-
-        try (Connection conn = db.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, request.nomeTeste().trim());
-            ps.setString(2, request.descricao());
-            ps.setInt(3, idTeste);
-
-            int updated = ps.executeUpdate();
-            if (updated == 0) {
+        try {
+            boolean updated = testeDAO.atualizar(idTeste, request);
+            if (!updated) {
                 return ResponseEntity.status(404).body(new CrudResult(false, "Teste nao encontrado.", null));
             }
 
@@ -446,12 +203,9 @@ public class DatabaseViewerApiController {
 
     @DeleteMapping("/testes/{idTeste}")
     public ResponseEntity<CrudResult> deleteTeste(@PathVariable("idTeste") int idTeste) {
-        String sql = "DELETE FROM teste WHERE id_teste = ?";
-
-        try (Connection conn = db.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idTeste);
-            int deleted = ps.executeUpdate();
-            if (deleted == 0) {
+        try {
+            boolean deleted = testeDAO.excluir(idTeste);
+            if (!deleted) {
                 return ResponseEntity.status(404).body(new CrudResult(false, "Teste nao encontrado.", null));
             }
 

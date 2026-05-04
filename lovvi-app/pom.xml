@@ -42,13 +42,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- driver H2 para fallback em ambiente local -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
         <!-- DevTools (hot reload) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
