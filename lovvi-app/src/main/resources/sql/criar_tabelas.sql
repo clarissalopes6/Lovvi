@@ -24,7 +24,7 @@ CREATE TABLE perfil (
     CONSTRAINT uq_perfil_usuario   UNIQUE (id_usuario),
     CONSTRAINT fk_perfil_usuario   FOREIGN KEY (id_usuario)
         REFERENCES usuario(id_usuario)
-        ON UPDATE CASCADE   -- ← exigência: UPDATE CASCADE
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
@@ -83,7 +83,7 @@ CREATE TABLE lovvi_match (
 
 CREATE TABLE usuario_amizade (
     id_usuario          INT         NOT NULL,
-    tipo_role_preferido VARCHAR(50) DEFAULT 'sem preferência',
+    tipo_role_preferido VARCHAR(50) DEFAULT 'sem preferencia',
     CONSTRAINT pk_usuario_amizade    PRIMARY KEY (id_usuario),
     CONSTRAINT fk_amizade_usuario    FOREIGN KEY (id_usuario)
         REFERENCES usuario(id_usuario)
@@ -114,12 +114,12 @@ CREATE TABLE pergunta (
     id_pergunta    INT  NOT NULL AUTO_INCREMENT,
     texto_pergunta TEXT NOT NULL,
     categoria      VARCHAR(50),
-    id_teste       INT  NULL,       -- nullable para permitir SET NULL
+    id_teste       INT  NULL,
     CONSTRAINT pk_pergunta      PRIMARY KEY (id_pergunta),
     CONSTRAINT fk_pergunta_teste FOREIGN KEY (id_teste)
         REFERENCES teste(id_teste)
         ON UPDATE CASCADE
-        ON DELETE SET NULL  -- ← exigência: DELETE SET NULL
+        ON DELETE SET NULL
 );
 
 CREATE TABLE opcao_resposta (

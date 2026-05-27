@@ -10,11 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-    <div class="page-container">
+<body class="lovvi-app-shell">
+    <div class="signup-page">
         <header class="page-header">
+            <p class="app-kicker">Lovvi</p>
             <h1 class="page-title">Criar sua conta</h1>
-            <p class="page-subtitle">Preencha seus dados para encontrar seu match</p>
+            <p class="page-subtitle">Monte seu perfil para gerar matches por afinidade.</p>
         </header>
 
         <div class="form-card">
@@ -116,10 +117,7 @@
                 </div>
             </form>
 
-            <div class="results" id="resultsSection">
-                <h3>Seus Matches</h3>
-                <div class="match-list" id="matchList"></div>
-            </div>
+            <p class="signup-footnote">Depois do cadastro, voce vai direto para seus cards de matches.</p>
         </div>
     </div>
 

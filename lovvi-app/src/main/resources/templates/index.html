@@ -10,16 +10,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-    <main class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Encontre conexoes reais no Lovvi</h1>
-            <p class="hero-subtitle">Cadastre seu perfil, responda o teste e descubra matches com base em afinidade.</p>
-            <div class="hero-actions">
-                <a href="/login" class="btn btn-primary">Entrar no perfil existente</a>
-                <a href="/cadastro" class="btn btn-outline">Cadastrar novo perfil</a>
+<body class="lovvi-app-shell">
+    <main class="app-hero">
+        <section class="app-hero-copy">
+            <p class="app-kicker">Lovvi</p>
+            <h1>Matches por afinidade, nao por acaso.</h1>
+            <p>Entre, veja seus perfis compativeis e navegue por cards com interesses em comum, cidade e pontuacao de compatibilidade.</p>
+
+            <div class="app-hero-actions">
+                <a href="/login" class="btn btn-primary">Entrar</a>
+                <a href="/cadastro" class="btn btn-outline">Criar perfil</a>
             </div>
-        </div>
+
+            <button id="btnContinueProfile" class="continue-profile" type="button" hidden>Continuar meu perfil</button>
+        </section>
+
+        <section class="phone-preview" aria-label="Previa do Lovvi">
+            <div class="phone-shell">
+                <div class="phone-topbar">
+                    <strong>Lovvi</strong>
+                    <span>92%</span>
+                </div>
+                <article class="preview-card">
+                    <div class="preview-photo">LV</div>
+                    <div>
+                        <h2>Marina, Recife</h2>
+                        <p>Danca, teatro e conversas leves.</p>
+                    </div>
+                    <div class="preview-tags">
+                        <span>Arte</span>
+                        <span>Interesses em comum</span>
+                    </div>
+                </article>
+                <div class="preview-actions">
+                    <span>Passar</span>
+                    <span>Curtir</span>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script th:src="@{/js/main.js}"></script>

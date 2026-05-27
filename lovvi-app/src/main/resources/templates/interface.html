@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Explorador de banco de dados Lovvi">
-    <title>Interface do Banco - Lovvi</title>
+    <title th:text="${title}">Interface do Banco - Lovvi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
+<body class="db-admin-shell" th:attr="data-interface-page=${interfacePage}">
 <div class="db-page">
     <header class="db-header">
         <div>
-            <h1 class="db-title">Interface do Banco</h1>
-            <p class="db-subtitle">Visualize tabelas, colunas e registros em tempo real.</p>
+            <p class="db-eyebrow">Lovvi Admin</p>
+            <h1 class="db-title" th:text="${interfaceHeading}">Interface do Banco</h1>
+            <p class="db-subtitle">Cada area do projeto fica em uma pagina propria para facilitar a apresentacao.</p>
         </div>
         <div class="db-header-actions">
             <button id="btnRefresh" class="btn btn-outline" type="button">Atualizar</button>
@@ -23,8 +24,16 @@
         </div>
     </header>
 
-    <main class="db-layout">
-        <aside class="db-sidebar">
+    <nav class="db-quick-nav" aria-label="Navegacao da interface">
+        <a href="/interface" th:classappend="${interfacePage == 'explorador'} ? 'active' : ''">Explorador</a>
+        <a href="/interface/crud" th:classappend="${interfacePage == 'crud'} ? 'active' : ''">CRUD</a>
+        <a href="/interface/consultas" th:classappend="${interfacePage == 'consultas'} ? 'active' : ''">Consultas e Views</a>
+        <a href="/interface/rotinas" th:classappend="${interfacePage == 'rotinas'} ? 'active' : ''">Rotinas SQL</a>
+        <a href="/interface/dashboard" th:classappend="${interfacePage == 'dashboard'} ? 'active' : ''">Dashboard</a>
+    </nav>
+
+    <main class="db-layout" th:classappend="${interfacePage == 'consultas' or interfacePage == 'rotinas' or interfacePage == 'dashboard'} ? ' db-layout-single' : ''">
+        <aside class="db-sidebar" th:if="${interfacePage == 'explorador' or interfacePage == 'crud' or interfacePage == 'tudo'}">
             <div class="db-sidebar-top">
                 <p class="db-muted">Banco</p>
                 <strong id="dbName">-</strong>
@@ -36,6 +45,15 @@
         </aside>
 
         <section class="db-content">
+            <section class="interface-page-section" th:if="${interfacePage == 'explorador' or interfacePage == 'tudo'}">
+            <div id="dbExplorer" class="db-section-heading">
+                <div>
+                    <p class="db-eyebrow">Explorador</p>
+                    <h2>Tabelas e registros</h2>
+                </div>
+                <span>Selecione uma tabela na lateral</span>
+            </div>
+
             <div class="db-stats">
                 <article class="db-stat-card">
                     <span>Tabela selecionada</span>
@@ -93,9 +111,17 @@
                     </div>
                 </article>
             </div>
+            </section>
 
-            <section class="crud-section">
-                <p id="crudHint" class="crud-hint">Selecione a tabela usuario ou teste para abrir o CRUD correspondente.</p>
+            <section id="dbCrud" class="crud-section" th:if="${interfacePage == 'crud' or interfacePage == 'tudo'}">
+                <div class="db-section-heading">
+                    <div>
+                        <p class="db-eyebrow">CRUD</p>
+                        <h2>Gerenciamento rapido</h2>
+                    </div>
+                    <span>Disponivel para tabelas principais</span>
+                </div>
+                <p id="crudHint" class="crud-hint">Selecione usuario, teste, interesse ou lovvi_match para abrir o CRUD correspondente.</p>
 
                 <article id="crudUsuarioCard" class="crud-card">
                     <div class="crud-card-header">
@@ -210,6 +236,230 @@
                             </tbody>
                         </table>
                     </div>
+                </article>
+
+                <article id="crudInteresseCard" class="crud-card">
+                    <div class="crud-card-header">
+                        <h2>CRUD de Interesse</h2>
+                        <p>Inserir, alterar e deletar registros da tabela interesse.</p>
+                    </div>
+
+                    <form id="formInteresse" class="crud-form">
+                        <input type="hidden" id="interesseId">
+                        <div class="crud-fields two-col">
+                            <div class="field">
+                                <label for="interesseNome">Nome do interesse</label>
+                                <input id="interesseNome" type="text" required>
+                            </div>
+                            <div class="field">
+                                <label for="interesseCategoria">Categoria</label>
+                                <input id="interesseCategoria" type="text" required>
+                            </div>
+                        </div>
+
+                        <div class="crud-actions">
+                            <button type="submit" class="btn btn-primary">Salvar interesse</button>
+                            <button type="button" id="btnInteresseClear" class="btn btn-outline">Limpar formulario</button>
+                        </div>
+                    </form>
+
+                    <div id="interessesCrudMsg" class="crud-msg"></div>
+
+                    <div class="db-table-wrap">
+                        <table class="db-grid crud-grid" id="interessesCrudGrid">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Acoes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td colspan="4">Carregando interesses...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article id="crudMatchCard" class="crud-card">
+                    <div class="crud-card-header">
+                        <h2>CRUD de Match</h2>
+                        <p>Inserir, alterar e deletar registros da tabela lovvi_match.</p>
+                    </div>
+
+                    <form id="formMatch" class="crud-form">
+                        <input type="hidden" id="matchId">
+                        <div class="crud-fields two-col">
+                            <div class="field">
+                                <label for="matchUsuario1">ID usuario 1</label>
+                                <input id="matchUsuario1" type="number" min="1" required>
+                            </div>
+                            <div class="field">
+                                <label for="matchUsuario2">ID usuario 2</label>
+                                <input id="matchUsuario2" type="number" min="1" required>
+                            </div>
+                            <div class="field">
+                                <label for="matchCompatibilidade">Compatibilidade</label>
+                                <input id="matchCompatibilidade" type="number" min="0" max="100" step="0.01" required>
+                            </div>
+                            <div class="field">
+                                <label for="matchStatus">Status</label>
+                                <select id="matchStatus" required>
+                                    <option value="pendente">pendente</option>
+                                    <option value="aceito">aceito</option>
+                                    <option value="recusado">recusado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="crud-actions">
+                            <button type="submit" class="btn btn-primary">Salvar match</button>
+                            <button type="button" id="btnMatchClear" class="btn btn-outline">Limpar formulario</button>
+                        </div>
+                    </form>
+
+                    <div id="matchesCrudMsg" class="crud-msg"></div>
+
+                    <div class="db-table-wrap">
+                        <table class="db-grid crud-grid" id="matchesCrudGrid">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario 1</th>
+                                <th>Usuario 2</th>
+                                <th>Compat.</th>
+                                <th>Status</th>
+                                <th>Acoes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td colspan="6">Carregando matches...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <section class="final-section" th:if="${interfacePage == 'consultas' or interfacePage == 'rotinas' or interfacePage == 'dashboard' or interfacePage == 'tudo'}">
+                <article id="dbReports" class="crud-card" th:if="${interfacePage == 'consultas' or interfacePage == 'tudo'}">
+                    <div class="crud-card-header">
+                        <h2>Consultas e Views - Etapa 04</h2>
+                        <p>Resultados das consultas e views criadas para o projeto.</p>
+                    </div>
+
+                    <div class="report-toolbar">
+                        <div class="field">
+                            <label for="relatorioSelect">Relatorio</label>
+                            <select id="relatorioSelect"></select>
+                        </div>
+                        <div class="field">
+                            <label for="relatorioCidade">Cidade</label>
+                            <input id="relatorioCidade" type="text" value="Recife">
+                        </div>
+                        <div class="field">
+                            <label for="relatorioTipoPerfil">Tipo perfil</label>
+                            <select id="relatorioTipoPerfil">
+                                <option value="">Todos</option>
+                                <option value="casual">casual</option>
+                                <option value="amizade">amizade</option>
+                                <option value="relacionamento">relacionamento</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="relatorioCategoria">Categoria</label>
+                            <input id="relatorioCategoria" type="text" placeholder="Arte, Lazer...">
+                        </div>
+                        <div class="field">
+                            <label for="relatorioStatus">Status</label>
+                            <select id="relatorioStatus">
+                                <option value="">Todos</option>
+                                <option value="pendente">pendente</option>
+                                <option value="aceito">aceito</option>
+                                <option value="recusado">recusado</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="relatorioLimit">Limite</label>
+                            <input id="relatorioLimit" type="number" min="1" max="200" value="50">
+                        </div>
+                    </div>
+
+                    <div class="crud-actions">
+                        <button id="btnRunRelatorio" class="btn btn-primary" type="button">Executar relatorio</button>
+                    </div>
+                    <div id="relatorioMsg" class="crud-msg"></div>
+                    <div id="relatorioResult" class="db-table-wrap">
+                        <p class="db-empty">Escolha um relatorio para visualizar.</p>
+                    </div>
+                </article>
+
+                <article id="dbRoutines" class="crud-card" th:if="${interfacePage == 'rotinas' or interfacePage == 'tudo'}">
+                    <div class="crud-card-header">
+                        <h2>Funcoes, Procedimentos e Triggers - Etapa 05</h2>
+                        <p>Execucao direta das rotinas SQL e visualizacao do log gerado pela trigger.</p>
+                    </div>
+
+                    <div class="routine-grid">
+                        <form id="formFnIdade" class="routine-card">
+                            <h3>fn_calcular_idade_usuario</h3>
+                            <div class="field">
+                                <label for="fnNascimento">Data de nascimento</label>
+                                <input id="fnNascimento" type="date" value="1998-01-01" required>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Executar funcao</button>
+                            <strong id="fnIdadeResult">-</strong>
+                        </form>
+
+                        <form id="formFnCompat" class="routine-card">
+                            <h3>fn_calcular_compatibilidade</h3>
+                            <div class="field">
+                                <label for="fnUsuario1">ID usuario 1</label>
+                                <input id="fnUsuario1" type="number" min="1" value="1" required>
+                            </div>
+                            <div class="field">
+                                <label for="fnUsuario2">ID usuario 2</label>
+                                <input id="fnUsuario2" type="number" min="1" value="2" required>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Executar funcao</button>
+                            <strong id="fnCompatResult">-</strong>
+                        </form>
+
+                        <form id="formProcStatus" class="routine-card">
+                            <h3>sp_atualizar_status_match</h3>
+                            <div class="field">
+                                <label for="procMatchId">ID match</label>
+                                <input id="procMatchId" type="number" min="1" value="1" required>
+                            </div>
+                            <div class="field">
+                                <label for="procStatus">Novo status</label>
+                                <select id="procStatus">
+                                    <option value="aceito">aceito</option>
+                                    <option value="pendente">pendente</option>
+                                    <option value="recusado">recusado</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Executar procedimento</button>
+                            <strong id="procStatusResult">-</strong>
+                        </form>
+                    </div>
+
+                    <div class="db-panel-header log-header">
+                        <h2>Log da trigger trg_match_au_log_status</h2>
+                        <button id="btnLoadLogs" class="btn btn-outline" type="button">Atualizar log</button>
+                    </div>
+                    <div id="logsResult" class="db-table-wrap">
+                        <p class="db-empty">Execute o procedimento para ver o log.</p>
+                    </div>
+                </article>
+
+                <article id="dbDashboard" class="crud-card" th:if="${interfacePage == 'dashboard' or interfacePage == 'tudo'}">
+                    <div class="crud-card-header">
+                        <h2>Dashboard Estatistico</h2>
+                        <p>Indicadores e graficos simples gerados com dados reais do banco.</p>
+                    </div>
+                    <div id="dashboardMetrics" class="dashboard-metrics"></div>
+                    <div id="dashboardCharts" class="dashboard-charts"></div>
                 </article>
             </section>
         </section>

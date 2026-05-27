@@ -52,9 +52,22 @@ USE lovvi_db;
 2. Execute os scripts nesta ordem:
 
 ```text
-lovvi-app/src/main/resources/sql/schema.sql
-lovvi-app/src/main/resources/sql/data.sql
+lovvi-app/src/main/resources/sql/criar_tabelas.sql
+lovvi-app/src/main/resources/sql/popular_dados.sql
+lovvi-app/src/main/resources/sql/consultas_views_indices.sql
+lovvi-app/src/main/resources/sql/funcoes_procedimentos_triggers.sql
 ```
+
+Depois que usuarios reais forem cadastrados pela interface, nao execute
+novamente `criar_tabelas.sql` nem `popular_dados.sql`. Para atualizar apenas
+views, indices, funcoes, procedimentos e triggers sem perder dados, use:
+
+```text
+lovvi-app/src/main/resources/sql/manutencao_rotinas.sql
+```
+
+O arquivo `lovvi-app/src/main/resources/sql/ordem_execucao.md` resume a
+ordem completa, incluindo a criacao do banco e a manutencao segura.
 
 3. Ajuste usuario e senha em `lovvi-app/src/main/resources/application.properties`, ou use variaveis de ambiente:
 

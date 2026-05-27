@@ -1,0 +1,19 @@
+# Build outputs
+target/
+**/target/
+
+# Logs
+*.log
+lovvi-app/target/*.log
+
+# Local presentation notes
+GUIA_APRESENTACAO_BD.md
+
+# IDE/local files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

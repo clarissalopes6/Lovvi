@@ -1,6 +1,7 @@
 package com.lovvi.controller;
 
 import com.lovvi.dao.InteresseDAO;
+import com.lovvi.dao.LovviMatchDAO;
 import com.lovvi.dao.UsuarioDAO;
 import com.lovvi.dto.CadastroUsuarioRequest;
 import com.lovvi.dto.CadastroUsuarioResult;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
@@ -35,10 +38,12 @@ public class LovviApiController {
 
     private final InteresseDAO interesseDAO;
     private final UsuarioDAO usuarioDAO;
+    private final LovviMatchDAO lovviMatchDAO;
 
-    public LovviApiController(InteresseDAO interesseDAO, UsuarioDAO usuarioDAO) {
+    public LovviApiController(InteresseDAO interesseDAO, UsuarioDAO usuarioDAO, LovviMatchDAO lovviMatchDAO) {
         this.interesseDAO = interesseDAO;
         this.usuarioDAO = usuarioDAO;
+        this.lovviMatchDAO = lovviMatchDAO;
     }
 
     private String normalizeGenero(String genero) {
@@ -108,9 +113,10 @@ public class LovviApiController {
 
             List<UsuarioPerfil> allProfiles = usuarioDAO.listarPerfis();
             List<MatchResultado> matches = new ArrayList<>();
+            Set<Integer> usuariosComInteracao = lovviMatchDAO.listarUsuariosComInteracao(idUsuario);
 
             for (UsuarioPerfil candidate : allProfiles) {
-                if (candidate.idUsuario() == source.idUsuario()) {
+                if (candidate.idUsuario() == source.idUsuario() || usuariosComInteracao.contains(candidate.idUsuario())) {
                     continue;
                 }
 
@@ -136,6 +142,87 @@ public class LovviApiController {
             logger.error("Erro ao buscar matches do usuario {}", idUsuario, e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @GetMapping("/usuarios/{id}/matches/accepted")
+    public ResponseEntity<List<MatchResultado>> getAcceptedMatches(@PathVariable("id") int idUsuario) {
+        try {
+            UsuarioPerfil source = usuarioDAO.buscarPerfil(idUsuario);
+            if (source == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<MatchResultado> matches = new ArrayList<>();
+            for (Integer idCandidato : lovviMatchDAO.listarUsuariosAceitos(idUsuario)) {
+                UsuarioPerfil candidate = usuarioDAO.buscarPerfil(idCandidato);
+                if (candidate != null) {
+                    matches.add(toMatchResultado(source, candidate, computeCompatibility(source, candidate)));
+                }
+            }
+
+            return ResponseEntity.ok(matches);
+        } catch (SQLException e) {
+            logger.error("Erro ao buscar matches aceitos do usuario {}", idUsuario, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/usuarios/{id}/matches/{idCandidato}/like")
+    public ResponseEntity<MatchResultado> likeMatch(
+            @PathVariable("id") int idUsuario,
+            @PathVariable("idCandidato") int idCandidato
+    ) {
+        try {
+            UsuarioPerfil source = usuarioDAO.buscarPerfil(idUsuario);
+            UsuarioPerfil candidate = usuarioDAO.buscarPerfil(idCandidato);
+            if (source == null || candidate == null || idUsuario == idCandidato) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            double score = computeCompatibility(source, candidate);
+            lovviMatchDAO.registrarAcao(idUsuario, idCandidato, toBigDecimal(score), "aceito");
+            return ResponseEntity.ok(toMatchResultado(source, candidate, score));
+        } catch (SQLException e) {
+            logger.error("Erro ao curtir match entre {} e {}", idUsuario, idCandidato, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/usuarios/{id}/matches/{idCandidato}/pass")
+    public ResponseEntity<Void> passMatch(
+            @PathVariable("id") int idUsuario,
+            @PathVariable("idCandidato") int idCandidato
+    ) {
+        try {
+            UsuarioPerfil source = usuarioDAO.buscarPerfil(idUsuario);
+            UsuarioPerfil candidate = usuarioDAO.buscarPerfil(idCandidato);
+            if (source == null || candidate == null || idUsuario == idCandidato) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            double score = computeCompatibility(source, candidate);
+            lovviMatchDAO.registrarAcao(idUsuario, idCandidato, toBigDecimal(score), "recusado");
+            return ResponseEntity.noContent().build();
+        } catch (SQLException e) {
+            logger.error("Erro ao recusar match entre {} e {}", idUsuario, idCandidato, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private MatchResultado toMatchResultado(UsuarioPerfil source, UsuarioPerfil candidate, double score) throws SQLException {
+        List<String> commonInterests = usuarioDAO.listarInteressesEmComum(source.idUsuario(), candidate.idUsuario());
+        return new MatchResultado(
+                candidate.idUsuario(),
+                candidate.nome() + " " + candidate.sobrenome(),
+                candidate.cidade(),
+                candidate.tipoPerfil(),
+                Math.min(100.0, Math.round(score * 100.0) / 100.0),
+                commonInterests
+        );
+    }
+
+    private BigDecimal toBigDecimal(double score) {
+        return BigDecimal.valueOf(Math.min(100.0, score)).setScale(2, RoundingMode.HALF_UP);
     }
 
     private double computeCompatibility(UsuarioPerfil a, UsuarioPerfil b) {

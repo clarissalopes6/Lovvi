@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lovvi - Seus matches">
+    <title th:text="${title}">Meu Perfil - Lovvi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="lovvi-app-shell">
+    <main class="swipe-page" th:attr="data-user-id=${idUsuario}">
+        <header class="swipe-header">
+            <a href="/" class="brand-mark" aria-label="Lovvi">Lovvi</a>
+            <div class="profile-chip">
+                <span th:text="${nomeUsuario}">Nome do usuario</span>
+            </div>
+        </header>
+
+        <section class="swipe-stage">
+            <div class="swipe-stage-top">
+                <div>
+                    <span class="section-kicker">Lovvi Match</span>
+                    <h1>Descobrir</h1>
+                </div>
+                <div class="swipe-status" id="swipeStatus">Carregando matches...</div>
+            </div>
+            <div class="card-stack" id="cardStack" aria-live="polite"></div>
+
+            <div class="swipe-controls">
+                <button id="btnPass" class="round-action pass" type="button" aria-label="Passar">&times;</button>
+                <button id="btnBackCard" class="round-action back" type="button" aria-label="Voltar">&larr;</button>
+                <button id="btnLike" class="round-action like" type="button" aria-label="Curtir">&hearts;</button>
+            </div>
+        </section>
+
+        <aside class="match-panel">
+            <div class="match-panel-head">
+                <div>
+                    <span class="section-kicker">Atividade</span>
+                    <h2>Conexoes vistas</h2>
+                </div>
+                <span id="historyCount" class="history-count">0</span>
+            </div>
+            <div id="seenMatches" class="seen-list">
+                <p>Nenhuma interacao ainda.</p>
+            </div>
+            <a href="/login" class="btn btn-outline">Trocar usuario</a>
+        </aside>
+    </main>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
