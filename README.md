@@ -1,80 +1,126 @@
-# Lovvi: Plataforma de relacionamento
+# Lovvi
 
-O **Lovvi** é um projeto de plataforma de relacionamentos focado na precisão do cruzamento de dados. Diferente de apps baseados apenas em fotos, o Lovvi utiliza o perfil comportamental e as preferências declaradas para gerar conexões reais através de consultas diretas no banco de dados!
+Aplicacao web de relacionamento integrada a um banco de dados MySQL, feita em
+Java com Spring Boot, Thymeleaf, HTML, CSS e JavaScript.
 
----
+Este README explica, de forma simples e direta, como executar o projeto.
 
-## O Conceito
-A ideia central do projeto é transformar afinidade em dados estruturados. O usuário não apenas se cadastra, ele passa por um **Teste de Perfil** que alimenta tabelas de características e gostos. O "Match" não é um clique aleatório, mas sim o resultado do cruzamento dessas tabelas.
+## Requisitos
 
-### Como funciona:
-1. **Cadastro:** Registro básico de conta.
-2. **Teste:** O usuário responde sobre seu estilo de vida e o que procura.
-3. **Match:** O sistema varre o banco de dados buscando quem respondeu de forma compatível aos interesses.
+- Java 21 instalado
+- Maven instalado
+- MySQL 8 instalado e em execucao
+- Navegador web
 
----
+## 1. Baixar ou abrir o projeto
 
-## Estrutura de Dados
+Entre na pasta do projeto:
 
-O projeto foca na relação entre três pilares principais:
-
-* **`usuario`**: Armazena o núcleo do perfil (nome, email, gênero, data de nascimento).
-* **`perfil`**: Detalhes específicos como descrição, preferências gerais e altura.
-* **`pergunta`**: Sistema dinâmico de questionários divididos por categorias.
-* **`resposta`**: O vínculo crucial que liga o usuário às escolhas feitas no teste.
-* **`interesse`**: Tabela de tags (hobbies/atividades) que o usuário possui.
-* **`usuario_relacionamento_serio` / `usuario_amizade`**: Especializações que definem o objetivo do usuário e filtros como distância máxima.
-* **`match`**: Registra a compatibilidade e o status da conexão gerada pelo cruzamento.
----
-
-## Tecnologias Utilizadas
-* **Linguagem:** Java (Springboot)
-* **Banco de Dados:** MySQL
-* **Interface:** HTML/CSS/JS
-
----
-
-## Integração com o Banco
-
-O projeto usa JDBC puro, sem ORM. Os comandos SQL ficam nos DAOs em `lovvi-app/src/main/java/com/lovvi/dao`, usando `Connection`, `PreparedStatement`, `ResultSet`, `INSERT`, `UPDATE`, `DELETE` e `SELECT` escritos manualmente.
-
-### Preparar o MySQL
-
-1. Crie o banco:
-
-```sql
-CREATE DATABASE IF NOT EXISTS lovvi_db
-  DEFAULT CHARACTER SET utf8mb4
-  DEFAULT COLLATE utf8mb4_unicode_ci;
-USE lovvi_db;
+```powershell
+cd Lovvi\lovvi-app
 ```
 
-2. Execute os scripts nesta ordem:
+## 2. Preparar o banco de dados
+
+No MySQL Workbench, DBeaver ou terminal MySQL, execute os scripts abaixo nesta
+ordem:
 
 ```text
-lovvi-app/src/main/resources/sql/criar_tabelas.sql
-lovvi-app/src/main/resources/sql/popular_dados.sql
-lovvi-app/src/main/resources/sql/consultas_views_indices.sql
-lovvi-app/src/main/resources/sql/funcoes_procedimentos_triggers.sql
+src/main/resources/sql/criar_banco.sql
+src/main/resources/sql/criar_tabelas.sql
+src/main/resources/sql/popular_dados.sql
+src/main/resources/sql/consultas_views_indices.sql
+src/main/resources/sql/funcoes_procedimentos_triggers.sql
 ```
 
-Depois que usuarios reais forem cadastrados pela interface, nao execute
-novamente `criar_tabelas.sql` nem `popular_dados.sql`. Para atualizar apenas
-views, indices, funcoes, procedimentos e triggers sem perder dados, use:
+Pelo terminal, a partir da pasta `Lovvi\lovvi-app`, tambem e possivel executar:
+
+```powershell
+mysql -u root -p < src/main/resources/sql/criar_banco.sql
+mysql -u root -p lovvi_db < src/main/resources/sql/criar_tabelas.sql
+mysql -u root -p lovvi_db < src/main/resources/sql/popular_dados.sql
+mysql -u root -p lovvi_db < src/main/resources/sql/consultas_views_indices.sql
+mysql -u root -p lovvi_db < src/main/resources/sql/funcoes_procedimentos_triggers.sql
+```
+
+O arquivo `src/main/resources/sql/ordem_execucao.md` tambem mostra a ordem dos
+scripts.
+
+## 3. Configurar usuario e senha do MySQL
+
+A aplicacao usa por padrao:
 
 ```text
-lovvi-app/src/main/resources/sql/manutencao_rotinas.sql
+usuario: root
+senha: root
+banco: lovvi_db
+porta: 3306
 ```
 
-O arquivo `lovvi-app/src/main/resources/sql/ordem_execucao.md` resume a
-ordem completa, incluindo a criacao do banco e a manutencao segura.
-
-3. Ajuste usuario e senha em `lovvi-app/src/main/resources/application.properties`, ou use variaveis de ambiente:
+Se a senha do seu MySQL for diferente, configure antes de iniciar:
 
 ```powershell
 $env:DB_USER="root"
-$env:DB_PASSWORD="root"
+$env:DB_PASSWORD="sua_senha_do_mysql"
+```
+
+Tambem e possivel alterar diretamente o arquivo:
+
+```text
+src/main/resources/application.properties
+```
+
+## 4. Executar a aplicacao
+
+Na pasta `Lovvi\lovvi-app`, rode:
+
+```powershell
 mvn spring-boot:run
 ```
 
-Depois inicie a aplicacao e abra `http://localhost:8080/interface`.
+Quando o Spring Boot terminar de iniciar, abra no navegador:
+
+```text
+http://localhost:8080
+```
+
+## Paginas principais
+
+```text
+http://localhost:8080/              Pagina inicial
+http://localhost:8080/cadastro      Cadastro de usuario
+http://localhost:8080/login         Login
+http://localhost:8080/perfil/1      Tela de matches do usuario 1
+http://localhost:8080/interface     Interface do banco de dados
+```
+
+A interface do banco tambem possui paginas separadas:
+
+```text
+http://localhost:8080/interface/crud
+http://localhost:8080/interface/consultas
+http://localhost:8080/interface/rotinas
+http://localhost:8080/interface/dashboard
+http://localhost:8080/interface/tudo
+```
+
+## Atualizar rotinas sem apagar dados
+
+Depois que existirem usuarios reais cadastrados, nao execute novamente
+`criar_tabelas.sql` nem `popular_dados.sql`, pois esses scripts recriam ou
+repovoam a base.
+
+Para atualizar apenas views, indices, funcoes, procedures e triggers, use:
+
+```powershell
+mysql -u root -p lovvi_db < src/main/resources/sql/manutencao_rotinas.sql
+```
+
+## Erro comum
+
+Se aparecer erro 500 ao abrir o site, confira:
+
+- se o MySQL esta aberto;
+- se o banco `lovvi_db` foi criado;
+- se os scripts SQL foram executados na ordem correta;
+- se usuario e senha do MySQL estao corretos em `application.properties` ou nas variaveis `DB_USER` e `DB_PASSWORD`.
